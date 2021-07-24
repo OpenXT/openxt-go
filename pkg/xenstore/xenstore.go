@@ -1,8 +1,10 @@
 // Copyright (c) 2015, Citrix Systems
 // All rights reserved.
 //
-// Copyright (c) 2015, Apertus Solutions, LLC
-// All rights reserved.
+// Copyright 2015 Apertus Soutions, LLC
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file
 //
 // File originated from github.com/xenserver/xe-guest-utilities and has
 // been horribly modified.
