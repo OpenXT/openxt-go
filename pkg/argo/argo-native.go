@@ -212,6 +212,7 @@ func open(sockType, domid, port int) (*Conn, error) {
 	return c, nil
 }
 
+// Dial initiates an Argo connection
 func Dial(sockType, domid, port int) (*Conn, error) {
 
 	c, err := open(sockType, domid, port)
@@ -227,6 +228,7 @@ func Dial(sockType, domid, port int) (*Conn, error) {
 	return c, nil
 }
 
+// Listen initiates an Argo connection and binds a Listener to the connection.
 func Listen(sockType, port int, partner DomainId) (ln *Listener, err error) {
 
 	c, err := open(sockType, XEN_ARGO_DOMID_ANY, port)
@@ -254,6 +256,7 @@ func Listen(sockType, port int, partner DomainId) (ln *Listener, err error) {
 	return l, nil
 }
 
+// Accept will wait for an incoming connection
 func (l *Listener) Accept() (*Conn, error) {
 	c, err := accept(l.conn.file)
 	if err != nil {
