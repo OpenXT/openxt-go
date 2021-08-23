@@ -12,7 +12,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/apertussolutions/openxt-go/xenstore"
+	"github.com/openxt/openxt-go/pkg/xenstore"
 )
 
 func die(format string, a ...interface{}) {
