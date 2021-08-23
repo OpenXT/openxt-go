@@ -203,9 +203,9 @@ func main() {
 	case *argPlatform:
 		conn, connErr = dbus.ConnectPlatformBus()
 	case *argSystem:
-		conn, connErr = godbus.ConnectSystemBus()
+		conn, connErr = godbus.SystemBus()
 	case *argSession:
-		conn, connErr = godbus.ConnectSessionBus()
+		conn, connErr = godbus.SessionBus()
 	default:
 		fmt.Println("must specify a connection type")
 		return
