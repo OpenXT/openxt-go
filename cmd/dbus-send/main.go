@@ -1,8 +1,6 @@
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// Copyright 2020 Apertus Soutions, LLC
-//
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file
+// Copyright 2026 Apertus Soutions, LLC
 //
 
 package main
@@ -16,7 +14,7 @@ import (
 	"strings"
 
 	flag "github.com/spf13/pflag"
-	"github.com/openxt/openxt-go/pkg/argo/dbus"
+	"github.com/openxt/openxt-go/argo/dbus"
 	godbus "github.com/godbus/dbus/v5"
 )
 
