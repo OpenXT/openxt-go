@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/godbus/dbus/v5"
 	"github.com/openxt/openxt-go/db"
 )
 
@@ -36,11 +37,13 @@ func main() {
 		usage()
 	}
 
-	db, err := dbd.NewClient()
-
+	conn, err := dbus.SystemBus()
 	if err != nil {
-		die("DB connection error: %v", err)
+		die("Error connecting to system bus: %v\n", err)
 	}
+	defer conn.Close()
+
+	db := db.NewDbClient(conn, db.DbServiceName, "/")
 
 	operation := os.Args[1]
 
