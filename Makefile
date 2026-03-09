@@ -1,21 +1,63 @@
 # Go parameters
 GOCMD=go
+GOMOD=$(GOCMD) mod
 GOBUILD=$(GOCMD) build
+GOINSTALL=$(GOCMD) install
 GOCLEAN=$(GOCMD) clean
 GOTEST=$(GOCMD) test
-GOGET=$(GOCMD) get
-STATIC_FLAGS=-a -ldflags '-s -w -extldflags "-static"'
+GOVET=$(GOCMD) vet
 
-all: build-all-static
+current_dir := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
+GOBIN ?= $(current_dir)/bin
+
+prefix = /usr
+exec_prefix = $(prefix)
+bindir = $(exec_prefix)/bin
+
+PKGBASE := github.com/openxt/openxt-go
+PKGS := argo db ioctl
+CMDS := argo-nc dbdcmd dbus-send
+VERSION := 0.1.0
+
+# FIPS is not available until Go 1.24
+#FIPS = GOFIPS140=v1.0.0
+
+ifeq (1,${STATIC})
+ENV = CGO_ENABLED=0 GOOS=linux ${FIPS}
+FLAGS = -a -ldflags '-s -w -extldflags "-static"'
+else
+ENV = ${FIPS}
+FLAGS = -ldflags="-s -w"
+endif
+
+all: ${CMDS}
 
 clean: 
-	$(GOCLEAN)
-	rm -f argo-nc
+	@$(GOCLEAN)
+	rm -rf $(GOBIN)
 
-build-all-static: build-argo-nc-static
+install: all
+	@- $(foreach CMD, $(CMDS), \
+		install -Dpm 0755 $(GOBIN)/$(CMD) $(DESTDIR)$(bindir)/$(CMD); \
+	)
 
-build-argo-nc-static:
-	CGO_ENABLED=0 GOOS=linux $(GOBUILD) $(STATIC_FLAGS) github.com/openxt/openxt-go/cmd/argo-nc
+dep:
+	$(GOMOD) download
 
-build-dbus-send-static:
-	CGO_ENABLED=0 GOOS=linux $(GOBUILD) $(STATIC_FLAGS) github.com/openxt/openxt-go/cmd/dbus-send
+vet:
+	@- $(foreach PKG, $(PKGS), \
+		$(GOVET) $(PKGBASE)/$(PKG); \
+	)
+	@- $(foreach CMD, $(CMDS), \
+		$(GOVET) $(PKGBASE)/cmd/$(CMD); \
+	)
+
+gobin:
+	[ -e "$(GOBIN)" ] || mkdir $(GOBIN)
+
+pkgsite: gobin
+	GOBIN=$(GOBIN) $(GOINSTALL) golang.org/x/pkgsite/cmd/pkgsite@latest
+
+
+${CMDS}: gobin dep
+	$(ENV) $(GOBUILD) -o $(GOBIN)/$@ $(FLAGS) $(PKGBASE)/cmd/$@

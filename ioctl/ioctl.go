@@ -1,11 +1,9 @@
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// Copyright 2020 Apertus Soutions, LLC
-//
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file
+// Copyright 2026 Apertus Soutions, LLC
 //
 
-package argo
+package ioctl
 
 const (
 	typBits = 8
@@ -28,18 +26,18 @@ const (
 	dirShift = sizShift + sizBits
 )
 
-func ioc(dir, t, nr, size uintptr) uintptr {
+func Ioc(dir, t, nr, size uintptr) uintptr {
 	return (dir << dirShift) | (t << typShift) | (nr << numShift) | (size << sizShift)
 }
 
-func ior(t, nr, size uintptr) uintptr {
-	return ioc(dirRead, t, nr, size)
+func Ior(t, nr, size uintptr) uintptr {
+	return Ioc(dirRead, t, nr, size)
 }
 
-func iow(t, nr, size uintptr) uintptr {
-	return ioc(dirWrite, t, nr, size)
+func Iow(t, nr, size uintptr) uintptr {
+	return Ioc(dirWrite, t, nr, size)
 }
 
-func iowr(t, nr, size uintptr) uintptr {
-	return ioc(dirRead|dirWrite, t, nr, size)
+func Iowr(t, nr, size uintptr) uintptr {
+	return Ioc(dirRead|dirWrite, t, nr, size)
 }

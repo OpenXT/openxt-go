@@ -1,8 +1,6 @@
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// Copyright 2015 Apertus Soutions, LLC
-//
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file
+// Copyright 2026 Apertus Soutions, LLC
 //
 
 package main
@@ -11,7 +9,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/openxt/openxt-go/pkg/dbd"
+	"github.com/openxt/openxt-go/db"
 )
 
 func die(format string, a ...interface{}) {

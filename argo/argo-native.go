@@ -1,10 +1,8 @@
 // +build !libargo
 
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// Copyright 2020 Apertus Soutions, LLC
-//
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file
+// Copyright 2026 Apertus Soutions, LLC
 //
 
 package argo
@@ -17,6 +15,8 @@ import (
 	"os"
 	"syscall"
 	"unsafe"
+
+	"github.com/openxt/openxt-go/ioctl"
 )
 
 const (
@@ -33,18 +33,18 @@ const (
 )
 
 var (
-	argoIocSetRingSize   = iow(typArgo, 1, u32Size)
-	argoIocBind          = iow(typArgo, 2, argoRingIdSize)
-	argoIocGetSockName   = iow(typArgo, 3, argoRingIdSize)
-	argoIocGetPeerName   = iow(typArgo, 4, xenArgoAddrSize)
-	argoIocConnect       = iow(typArgo, 5, xenArgoAddrSize)
-	argoIocGetConnectErr = iow(typArgo, 6, intSize)
-	argoIocListen        = iow(typArgo, 7, u32Size)
-	argoIocAccept        = iow(typArgo, 8, xenArgoAddrSize)
-	argoIocGetSockType   = iow(typArgo, 11, intSize)
-	argoIocViptablesAdd  = iow(typArgo, 12, vIpTablesRulePos)
-	argoIocViptablesDel  = iow(typArgo, 13, vIpTablesRulePos)
-	argoIocViptablesList = iow(typArgo, 14, u32Size)
+	argoIocSetRingSize   = ioctl.Iow(typArgo, 1, u32Size)
+	argoIocBind          = ioctl.Iow(typArgo, 2, argoRingIdSize)
+	argoIocGetSockName   = ioctl.Iow(typArgo, 3, argoRingIdSize)
+	argoIocGetPeerName   = ioctl.Iow(typArgo, 4, xenArgoAddrSize)
+	argoIocConnect       = ioctl.Iow(typArgo, 5, xenArgoAddrSize)
+	argoIocGetConnectErr = ioctl.Iow(typArgo, 6, intSize)
+	argoIocListen        = ioctl.Iow(typArgo, 7, u32Size)
+	argoIocAccept        = ioctl.Iow(typArgo, 8, xenArgoAddrSize)
+	argoIocGetSockType   = ioctl.Iow(typArgo, 11, intSize)
+	argoIocViptablesAdd  = ioctl.Iow(typArgo, 12, vIpTablesRulePos)
+	argoIocViptablesDel  = ioctl.Iow(typArgo, 13, vIpTablesRulePos)
+	argoIocViptablesList = ioctl.Iow(typArgo, 14, u32Size)
 )
 
 func addrFromC(r io.Reader, a *Addr) error {
