@@ -16,7 +16,7 @@ bindir = $(exec_prefix)/bin
 
 PKGBASE := github.com/openxt/openxt-go
 PKGS := argo db ioctl
-CMDS := argo-nc dbdcmd dbus-send
+CMDS := argo-nc db-cmd dbus-send dbd
 VERSION := 0.1.0
 
 # FIPS is not available until Go 1.24
