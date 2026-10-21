@@ -1,3 +1,4 @@
+//go:build !libargo
 // +build !libargo
 
 // SPDX-License-Identifier: BSD-3-Clause
@@ -20,10 +21,6 @@ import (
 )
 
 const (
-	XEN_ARGO_MAX_RING_SIZE = 0x1000000
-	XEN_ARGO_DOMID_ANY     = 0x7FF4
-	XEN_ARGO_PORT_ANY      = 0xFFFFFFFF
-
 	typArgo          = 87 // 'W'
 	intSize          = 4  // int (assuming 4 byte ints)
 	u32Size          = 4  // uint32_t
@@ -100,6 +97,15 @@ func (r *RingId) toC(w io.Writer) error {
 	return nil
 }
 
+// ioctlErr returns errno as an error so callers can use errors.Is.
+// A zero errno is success.
+func ioctlErr(errno syscall.Errno) error {
+	if errno == 0 {
+		return nil
+	}
+	return errno
+}
+
 func connect(file *os.File, addr Addr) error {
 	var buf bytes.Buffer
 
@@ -112,11 +118,7 @@ func connect(file *os.File, addr Addr) error {
 		uintptr(unsafe.Pointer(&buf.Bytes()[0])),
 	)
 
-	if errno != 0 {
-		return errors.New(errno.Error())
-	}
-
-	return nil
+	return ioctlErr(errno)
 }
 
 func bind(file *os.File, id RingId) error {
@@ -131,14 +133,11 @@ func bind(file *os.File, id RingId) error {
 		uintptr(unsafe.Pointer(&buf.Bytes()[0])),
 	)
 
-	if errno != 0 {
-		return errors.New(errno.Error())
-	}
-
-	return nil
+	return ioctlErr(errno)
 }
 
 func listen(file *os.File, backlog int) error {
+	// The driver ignores the argument. ARGOIOCLISTEN does not read it.
 	_, _, errno := syscall.Syscall(
 		syscall.SYS_IOCTL,
 		file.Fd(),
@@ -146,11 +145,7 @@ func listen(file *os.File, backlog int) error {
 		uintptr(backlog),
 	)
 
-	if errno != 0 {
-		return errors.New(errno.Error())
-	}
-
-	return nil
+	return ioctlErr(errno)
 }
 
 func accept(file *os.File) (*Conn, error) {
@@ -162,19 +157,18 @@ func accept(file *os.File) (*Conn, error) {
 		uintptr(argoIocAccept),
 		uintptr(unsafe.Pointer(&b[0])),
 	)
-	if errno != 0 {
-		return nil, errors.New(errno.Error())
-	}
-
-	buf := bytes.NewBuffer(b)
-	c := &Conn{}
-
-	if err := addrFromC(buf, &c.addr); err != nil {
+	if err := ioctlErr(errno); err != nil {
 		return nil, err
 	}
-	c.file = os.NewFile(nfd, file.Name())
+
+	c := &Conn{file: os.NewFile(nfd, file.Name())}
 	if c.file == nil {
+		syscall.Close(int(nfd))
 		return nil, errors.New("accept returned invalid descriptor")
+	}
+	if err := addrFromC(bytes.NewBuffer(b), &c.addr); err != nil {
+		c.Close()
+		return nil, err
 	}
 
 	return c, nil
@@ -206,6 +200,7 @@ func open(sockType, domid, port int) (*Conn, error) {
 	}
 
 	if err := syscall.SetNonblock(int(c.file.Fd()), false); err != nil {
+		c.Close()
 		return nil, err
 	}
 
@@ -246,10 +241,12 @@ func Listen(sockType, port int, partner DomainId) (ln *Listener, err error) {
 	}
 
 	if err := bind(l.conn.file, l.ring); err != nil {
+		c.Close()
 		return nil, err
 	}
 
 	if err := listen(l.conn.file, 5); err != nil {
+		c.Close()
 		return nil, err
 	}
 
@@ -263,7 +260,8 @@ func (l *Listener) Accept() (*Conn, error) {
 		return nil, err
 	}
 
-	if err = syscall.SetNonblock(int(l.conn.file.Fd()), false); err != nil {
+	if err = syscall.SetNonblock(int(c.file.Fd()), false); err != nil {
+		c.Close()
 		return nil, err
 	}
 
