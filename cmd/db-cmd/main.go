@@ -30,9 +30,9 @@ func usage() {
 	die(`
 Available commands are:
   cat <key>		Dump raw value for <key>
-  exists <key>		Check if <key> exist
+  exists <key>		Check if <key> exists
   ls <key>		List tree start at <key>
-  nodes <key>		List immediate childtren of <key>
+  nodes <key>		List immediate children of <key>
   read <key>		Retrieve string value for <key>
   rm <key>		Delete <key>
   write <key> <value>	Store <value> for <key>`)
@@ -65,7 +65,7 @@ func list(c *db.DbClient, fullPath bool, indent int, path string) (string, error
 
 	out := key + " ="
 	for _, elem := range result {
-		r, err := list(c, fullPath, indent+1, path+"/"+elem)
+		r, err := list(c, fullPath, indent+1, path+db.PathDelimiter+elem)
 		if err != nil {
 			return "", err
 		}
@@ -123,11 +123,13 @@ func main() {
 				"Error: incorrect number of arguments.\n")
 			usage()
 		}
-		result, err := client.ReadBinary(args[1])
+		result, err := client.ReadBinary(args[0])
 		if err != nil {
 			die("DB read binary error: %v", err)
 		}
-		binary.Write(os.Stdout, binary.LittleEndian, result)
+		if err := binary.Write(os.Stdout, binary.LittleEndian, result); err != nil {
+			die("DB read binary error: %v", err)
+		}
 
 	case "exists":
 		if arglen != 1 {
@@ -135,11 +137,11 @@ func main() {
 				"Error: incorrect number of arguments.\n")
 			usage()
 		}
-		result, err := client.Exists(os.Args[0])
+		result, err := client.Exists(args[0])
 		if err != nil {
 			die("DB exists error: %v", err)
 		}
-		fmt.Printf("%t", result)
+		fmt.Printf("%t\n", result)
 	case "ls":
 		path := "/"
 		if len(args) != 0 {
