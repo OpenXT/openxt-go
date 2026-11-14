@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 //
-// Copyright 2026 Apertus Soutions, LLC
+// Copyright 2026 Apertus Solutions, LLC
 //
 
 // Package argo provides a Go interface for interacting with the Argo character
