@@ -22,9 +22,8 @@ const (
 	SystemBusAddress   = "unix:path=/var/run/dbus/system_bus_socket"
 )
 
-// ConnectPlatformBus is a helper to quickly open a connection to Dom0 on
-//
-//	argo port 5555
+// ConnectPlatformBus opens a D-Bus connection to Dom0 on Argo port 5555.
+// DBUS_SYSTEM_BUS_ADDRESS overrides that address when it is set.
 func ConnectPlatformBus(opts ...godbus.ConnOption) (*godbus.Conn, error) {
 	address := os.Getenv("DBUS_SYSTEM_BUS_ADDRESS")
 	if address == "" {
