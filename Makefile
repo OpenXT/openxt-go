@@ -15,7 +15,6 @@ exec_prefix = $(prefix)
 bindir = $(exec_prefix)/bin
 
 PKGBASE := github.com/openxt/openxt-go
-PKGS := argo db ioctl
 CMDS := argo-nc db-cmd dbus-send
 VERSION := 0.1.0
 
@@ -44,13 +43,11 @@ install: all
 dep:
 	$(GOMOD) download
 
+test:
+	$(GOTEST) ./...
+
 vet:
-	@- $(foreach PKG, $(PKGS), \
-		$(GOVET) $(PKGBASE)/$(PKG); \
-	)
-	@- $(foreach CMD, $(CMDS), \
-		$(GOVET) $(PKGBASE)/cmd/$(CMD); \
-	)
+	$(GOVET) ./...
 
 gobin:
 	[ -e "$(GOBIN)" ] || mkdir $(GOBIN)
