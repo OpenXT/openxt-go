@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 //
-// Copyright 2026 Apertus Soutions, LLC
+// Copyright 2026 Apertus Solutions, LLC
 //
 
 package db
@@ -55,6 +55,9 @@ func (d *DbClient) Read(path string) (value string, err error) {
 	return
 }
 
+// ReadBinary reads a file-backed binary node. Upstream dbd returns the raw
+// bytes of a non-.db file stored under a vm or dom-store directory. That
+// service has no write_binary method.
 func (d *DbClient) ReadBinary(path string) (value []byte, err error) {
 
 	err = d.Call("com.citrix.xenclient.db.read_binary", 0, path).Store(&value)

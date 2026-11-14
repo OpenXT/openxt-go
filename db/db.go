@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: BSD-3-Clause
 //
-// Copyright 2026 Apertus Soutions, LLC
+// Copyright 2026 Apertus Solutions, LLC
 //
 
 /*
-Package db implements an client and server for OpenXT db.
+Package db is a client for the OpenXT database service
+com.citrix.xenclient.db.
 */
 package db
 

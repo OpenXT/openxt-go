@@ -1,17 +1,23 @@
 // SPDX-License-Identifier: BSD-3-Clause
 //
-// Copyright 2026 Apertus Soutions, LLC
+// Copyright 2026 Apertus Solutions, LLC
 //
 
 // Package argo provides a Go interface for interacting with the Argo character
 // driver used by OpenXT.
 package argo
 
-// Common functions for Conn struct
-
 import (
 	"os"
 )
+
+const (
+	XEN_ARGO_MAX_RING_SIZE = 0x1000000
+	XEN_ARGO_DOMID_ANY     = 0x7FF4
+	XEN_ARGO_PORT_ANY      = 0xFFFFFFFF
+)
+
+// Common functions for Conn struct
 
 // Returns an os.File pointer that wraps the underlying file descriptor for the
 // connection.
